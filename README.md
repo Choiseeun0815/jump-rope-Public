@@ -53,7 +53,57 @@ https://youtu.be/NbgmZB3tmz8
 
 ## :star2: 주요기능
 
-### 1. 로비
+### 1. 로그인 기능
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+## Lobby Scene
+### 1. 상점 기능
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+### 2. 도전 과제 기능
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+### 3. 랭킹 기능
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+## Game Scene
+### 1. 도전 과제 기능
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+### 2. 장애물 시스템
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+
+#### 2-1. 통나무
+![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
+
+
+- 게임시작 버튼을 누르면 디펜스 게임을 즐길 수 있습니다.
+- 게임설명 버튼을 눌러서 게임의 조작법과 유닛, 몬스터 간의 상성을 확인할 수 있습니다.
+- 
+#### 2-2. 화살
 ![image](https://github.com/YooSeungA52/camp-week-10/assets/124012310/81b2f509-bcdf-4d22-ae7c-91f2d42e96ce)
 
 
