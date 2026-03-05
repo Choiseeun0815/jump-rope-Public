@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9777480f01c29da42864a16d4577e1ac, type: 3}
+  m_Name: CharacterWhiteFox
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
+  id: Char_WhiteFox
+  category: 0
+  displayName: "\uBD81\uADF9\uC5EC\uC6B0"
+  prefab: {fileID: 2718199192519185583, guid: f3f399d468781f24b957db0b52dd00f2, type: 3}
+  thumbnail: {fileID: 21300000, guid: afb55d9f38505d34a8b2168c768fe954, type: 3}
+  fixedUnlockPrice: 500
+  trailColor: {r: 1, g: 0.4669811, b: 0.9594216, a: 0.33333334}
+  cameraMode: 0
+  allowRotate: 1
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 0, y: 0.8, z: 6}
+  cameraLocalEuler: {x: 35, y: 180, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0

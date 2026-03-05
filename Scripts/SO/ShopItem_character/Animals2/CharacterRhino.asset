@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9777480f01c29da42864a16d4577e1ac, type: 3}
+  m_Name: CharacterRhino
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
+  id: Char_Rhino
+  category: 0
+  displayName: "\uCF54\uBFD4\uC18C"
+  prefab: {fileID: 668397169033754377, guid: 1848755f5265e914dbacf9b2f950e3be, type: 3}
+  thumbnail: {fileID: 21300000, guid: 736dd1eff9c35734b94a35f35664e2e2, type: 3}
+  fixedUnlockPrice: 500
+  trailColor: {r: 1, g: 0.7464502, b: 0, a: 0.33333334}
+  cameraMode: 0
+  allowRotate: 1
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 0, y: 0.8, z: 6}
+  cameraLocalEuler: {x: 35, y: 180, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0

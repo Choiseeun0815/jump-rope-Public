@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746e2581871cb6a4d9c040f679cfb3aa, type: 3}
+  m_Name: JungleMap
+  m_EditorClassIdentifier: Assembly-CSharp::MapThemeData
+  themeID: Theme_Jungle
+  isDefault: 0
+  themeRopeColor: {r: 2.431185, g: 2.9960787, b: 0, a: 2}
+  mapPrefab: {fileID: 5186679618337135921, guid: 3f22f84f09cd3354ab497c250a7b6f52, type: 3}
+  leftButtonSprite: {fileID: -371825952, guid: aed25f341022ba540bff9243cbbde531, type: 3}
+  rightButtonSprite: {fileID: -1831548095, guid: aed25f341022ba540bff9243cbbde531, type: 3}
+  jumpButtonSprite: {fileID: -1186385343, guid: aed25f341022ba540bff9243cbbde531, type: 3}
+  bgmClip: {fileID: 8300000, guid: da1f7de2cb1b2ad49a9505499d3ab6fd, type: 3}
+  obstacleVisuals:
+  - type: 1
+    prefab: {fileID: 8025360315671992164, guid: be9cf36506415874c9b1cb0700d1a551, type: 3}
+  - type: 2
+    prefab: {fileID: 1310477566521306425, guid: b2f6b575a275479449b9c07f7b333277, type: 3}

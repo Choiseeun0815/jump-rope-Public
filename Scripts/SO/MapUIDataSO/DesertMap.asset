@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746e2581871cb6a4d9c040f679cfb3aa, type: 3}
+  m_Name: DesertMap
+  m_EditorClassIdentifier: Assembly-CSharp::MapThemeData
+  themeID: Theme_Desert
+  isDefault: 0
+  themeRopeColor: {r: 0, g: 2.9960787, b: 0.088418625, a: 2}
+  mapPrefab: {fileID: 2927141988121797053, guid: f1194cdd232179d40861c721070f9aab, type: 3}
+  leftButtonSprite: {fileID: 1069326456, guid: 0778925d0db200644bc885f1b605617e, type: 3}
+  rightButtonSprite: {fileID: -1611071641, guid: 0778925d0db200644bc885f1b605617e, type: 3}
+  jumpButtonSprite: {fileID: -1138737524, guid: 0778925d0db200644bc885f1b605617e, type: 3}
+  bgmClip: {fileID: 8300000, guid: 899983b0e6557ff42aaf45d4d4585ad8, type: 3}
+  obstacleVisuals:
+  - type: 1
+    prefab: {fileID: 8978257119210340791, guid: ef890dd43a9c20d4b8124546909df89f, type: 3}
+  - type: 2
+    prefab: {fileID: 1639189760954237357, guid: 53e592f7d528fe745be5801f329e8641, type: 3}

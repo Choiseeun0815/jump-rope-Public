@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f76d5bb4c6cb242953ffa224db3d38, type: 3}
+  m_Name: HighScore_150
+  m_EditorClassIdentifier: Assembly-CSharp::ChallengeItemDefinition
+  id: Char_Gorilla
+  category: 0
+  displayName: "\uACE0\uB9B4\uB77C"
+  prefab: {fileID: 4952899354182979294, guid: 2f0dc75a53c6575409ff4fe81f71b5f6, type: 3}
+  thumbnail: {fileID: 21300000, guid: 03f2f136b88802642a279ba474cea0b0, type: 3}
+  fixedUnlockPrice: 0
+  trailColor: {r: 0, g: 1, b: 1, a: 2}
+  cameraMode: 0
+  allowRotate: 1
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 0, y: 0.8, z: 6}
+  cameraLocalEuler: {x: 35, y: 180, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0
+  type: 1
+  targetValue: 150
+  targetStringID: 
+  description: "\uCD5C\uACE0 \uC810\uC218 150\uC810 \uC774\uC0C1 \uB2EC\uC131 \uC2DC
+    \uD574\uAE08\uB429\uB2C8\uB2E4."

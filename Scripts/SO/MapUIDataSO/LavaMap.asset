@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746e2581871cb6a4d9c040f679cfb3aa, type: 3}
+  m_Name: LavaMap
+  m_EditorClassIdentifier: Assembly-CSharp::MapThemeData
+  themeID: Theme_Lava
+  isDefault: 0
+  themeRopeColor: {r: 0.5295989, g: 0, b: 2.9960787, a: 2}
+  mapPrefab: {fileID: 8703201098161555277, guid: 1055c96835837204eaecc39d587f3b77, type: 3}
+  leftButtonSprite: {fileID: -548741828, guid: 959912a55ea075b4f92cae5260b9cade, type: 3}
+  rightButtonSprite: {fileID: -1084445, guid: 959912a55ea075b4f92cae5260b9cade, type: 3}
+  jumpButtonSprite: {fileID: -1757468325, guid: 959912a55ea075b4f92cae5260b9cade, type: 3}
+  bgmClip: {fileID: 8300000, guid: 1a58c962ca9700c46b8f72d7b1604de0, type: 3}
+  obstacleVisuals:
+  - type: 1
+    prefab: {fileID: 1981395108020200, guid: 792c9366e6b5daa4691589fc81da9132, type: 3}
+  - type: 2
+    prefab: {fileID: 1327848827139556, guid: dd4291c7677ad1444a0cebf505b41790, type: 3}

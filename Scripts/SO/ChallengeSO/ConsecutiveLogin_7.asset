@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f76d5bb4c6cb242953ffa224db3d38, type: 3}
+  m_Name: ConsecutiveLogin_7
+  m_EditorClassIdentifier: Assembly-CSharp::ChallengeItemDefinition
+  id: Char_Unicorn
+  category: 0
+  displayName: "\uC720\uB2C8\uCF58"
+  prefab: {fileID: 7028465836631776614, guid: 4dc508d0e7dbce645822caa2a2701e78, type: 3}
+  thumbnail: {fileID: 21300000, guid: ab823b404085bbe44b0dfcb6465d257d, type: 3}
+  fixedUnlockPrice: 0
+  trailColor: {r: 0, g: 1, b: 1, a: 2}
+  cameraMode: 0
+  allowRotate: 1
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 0, y: 0.8, z: 6}
+  cameraLocalEuler: {x: 35, y: 180, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0
+  type: 5
+  targetValue: 7
+  targetStringID: 
+  description: "7\uC77C \uC5F0\uC18D \uC811\uC18D \uC2DC \uD574\uAE08\uB429\uB2C8\uB2E4."

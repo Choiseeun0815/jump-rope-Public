@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9777480f01c29da42864a16d4577e1ac, type: 3}
+  m_Name: CharacterTurtle
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemDefinition
+  id: Char_Turtle
+  category: 0
+  displayName: "\uAC70\uBD81\uC774"
+  prefab: {fileID: 4510122219715938883, guid: 92fb25bb1f223234cab0288f1b8049ac, type: 3}
+  thumbnail: {fileID: 21300000, guid: 3fd20be3ddc93804ebf9af519ba8b6fd, type: 3}
+  fixedUnlockPrice: 500
+  trailColor: {r: 0.6415094, g: 0.32983267, b: 0.5730628, a: 0.33333334}
+  cameraMode: 0
+  allowRotate: 1
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 0, y: 0.8, z: 6}
+  cameraLocalEuler: {x: 35, y: 180, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0

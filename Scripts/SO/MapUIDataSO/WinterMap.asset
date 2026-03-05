@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746e2581871cb6a4d9c040f679cfb3aa, type: 3}
+  m_Name: WinterMap
+  m_EditorClassIdentifier: Assembly-CSharp::MapThemeData
+  themeID: Theme_Winter
+  isDefault: 0
+  themeRopeColor: {r: 0, g: 0.12449898, b: 2.9960787, a: 2}
+  mapPrefab: {fileID: 7377212052637143467, guid: 00f9eca5279f98248bc906da9cae707e, type: 3}
+  leftButtonSprite: {fileID: 1760326983, guid: 9e44858ef96544646acc0bd51bc3016f, type: 3}
+  rightButtonSprite: {fileID: 2095194933, guid: 9e44858ef96544646acc0bd51bc3016f, type: 3}
+  jumpButtonSprite: {fileID: 1931335423, guid: 9e44858ef96544646acc0bd51bc3016f, type: 3}
+  bgmClip: {fileID: 8300000, guid: ab5f4f8c846bac943aad422d1c588c83, type: 3}
+  obstacleVisuals:
+  - type: 1
+    prefab: {fileID: 5795368031494650791, guid: 2b14c6b8b8c651747a3210f8c9b90522, type: 3}
+  - type: 2
+    prefab: {fileID: 8318849277831868891, guid: 073595a79bf331b46b62c18ddab799c0, type: 3}

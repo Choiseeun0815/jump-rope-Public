@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8739a0aaf74072439aba4d4fb54d570, type: 3}
+  m_Name: WinterMap
+  m_EditorClassIdentifier: Assembly-CSharp::ShopMapItemDefinition
+  id: Theme_Winter
+  category: 1
+  displayName: "\uACA8\uC6B8"
+  prefab: {fileID: 7377212052637143467, guid: 00f9eca5279f98248bc906da9cae707e, type: 3}
+  thumbnail: {fileID: 1148796130, guid: 0d832e832d210a24baea1074faebf75d, type: 3}
+  fixedUnlockPrice: 10000
+  trailColor: {r: 0, g: 1, b: 1, a: 2}
+  cameraMode: 1
+  allowRotate: 0
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 14.5, y: 8, z: -27}
+  cameraLocalEuler: {x: 20, y: -25, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0
+  mapThemeData: {fileID: 11400000, guid: 652e9afcc3d808d4689389eab1feb547, type: 2}
+  lobbyLocalPosition: {x: -6, y: -1, z: -13}
+  lobbyLocalEuler: {x: 0, y: 0, z: 0}
+  lobbyLocalScale: {x: 1, y: 1, z: 1}
+  gameLocalPosition: {x: 0, y: 0, z: 1.5}
+  gameLocalEuler: {x: 0, y: 0, z: 0}
+  gameLocalScale: {x: 1, y: 1, z: 1}

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8739a0aaf74072439aba4d4fb54d570, type: 3}
+  m_Name: DesertMap
+  m_EditorClassIdentifier: Assembly-CSharp::ShopMapItemDefinition
+  id: Theme_Desert
+  category: 1
+  displayName: "\uC0AC\uB9C9"
+  prefab: {fileID: 2927141988121797053, guid: f1194cdd232179d40861c721070f9aab, type: 3}
+  thumbnail: {fileID: -1118348965, guid: 787cfe68b0b1593439ec22f592807f5a, type: 3}
+  fixedUnlockPrice: 10000
+  trailColor: {r: 0, g: 1, b: 1, a: 2}
+  cameraMode: 1
+  allowRotate: 0
+  previewPivotOffset: {x: 0, y: 0, z: 0}
+  previewEuler: {x: 15, y: 180}
+  fitPadding: 1.25
+  minDistance: 0.5
+  maxDistance: 50
+  cameraLocalPosition: {x: 14, y: 8, z: -25}
+  cameraLocalEuler: {x: 20, y: -30, z: 0}
+  useOrthographic: 0
+  orthoSizeOverride: 0
+  fovOverride: 0
+  mapThemeData: {fileID: 11400000, guid: e2693941b91e41c4a9c5a14129f76511, type: 2}
+  lobbyLocalPosition: {x: -6, y: -1, z: -15}
+  lobbyLocalEuler: {x: 0, y: 0, z: 0}
+  lobbyLocalScale: {x: 1, y: 1, z: 1}
+  gameLocalPosition: {x: 0, y: 0, z: 0}
+  gameLocalEuler: {x: 0, y: 0, z: 0}
+  gameLocalScale: {x: 1, y: 1, z: 1}

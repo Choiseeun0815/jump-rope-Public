@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7e62d8d41610dc4db7d1b365d7ab504, type: 3}
+  m_Name: map_catalog
+  m_EditorClassIdentifier: Assembly-CSharp::ShopCatalog
+  items:
+  - {fileID: 11400000, guid: 30e3f20fcb0ce8845b83e5b73458e20a, type: 2}
+  - {fileID: 11400000, guid: 07bbcb38c78b08a46a85982ca5653e24, type: 2}
+  - {fileID: 11400000, guid: 4862d00721421ac49b365f2e976057aa, type: 2}
+  - {fileID: 11400000, guid: b39710f480bccba429af265a62945679, type: 2}
+  - {fileID: 11400000, guid: 26b5a4f3d02cff44398e167d94b5d9c9, type: 2}
+  - {fileID: 11400000, guid: 2967b3dc1dd08824684e5f621d8a8fc4, type: 2}
+  - {fileID: 11400000, guid: aef3c40e14a391c49a72161244c9a519, type: 2}
+  - {fileID: 11400000, guid: 2f3be9c4f0d6eca439b2eafedc6d5812, type: 2}
+  - {fileID: 11400000, guid: 0253fe9f106c8b44797e06f723e93f1b, type: 2}
