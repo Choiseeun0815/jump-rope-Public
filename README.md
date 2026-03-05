@@ -30,7 +30,7 @@
 
 ## 📺시연 영상
 ### [📺YouTube Link]
-https://youtu.be/NbgmZB3tmz8
+[![Watch the video](https://img.youtube.com/vi/NbgmZB3tmz8/maxresdefault.jpg)](https://www.youtube.com/watch?v=NbgmZB3tmz8)
 
 <br>
 
