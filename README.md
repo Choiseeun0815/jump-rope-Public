@@ -49,7 +49,7 @@
 | 이름 | 담당 업무 | 깃허브 주소 | 이메일 |
 | :---: | :---: | :---: | :---: |
 | 이경현 | 상점 관련 기능, 캐릭터 관련 기능, 초기 생성 | https://github.com/gstk0009 | gstk0009@naver.com |
-| 최세은 | 로그인/로그아웃/회원탈퇴, 도전과제, 줄 돌리기, 장애물(통나무,잉크) LevelPlay 광고, 유저 데이터 관리 | https://github.com/Choiseeun0815 | sqq1_s@naver.com |
+| 최세은 | 유저 데이터 관리, 도전 과제, 줄 돌리기, 장애물(통나무,잉크) LevelPlay 광고 | https://github.com/Choiseeun0815 | sqq1_s@naver.com |
 
 
 [:ringed_planet: 목차로 돌아가기](#목차)
