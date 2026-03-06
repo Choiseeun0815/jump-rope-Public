@@ -7,7 +7,6 @@
 | [✋ 팀 소개 ](#hand-팀-소개) |
 | [🌟 주요기능 ](#star2-주요기능) |
 | [☑️ 기술 스택 ](#ballot_box_with_check-기술-스택) |
-| [🕸️ 와이어프레임 ](#spider_web-와이어프레임) |
 | [📓 UML ](#uml) |
 
 </div>
@@ -330,15 +329,6 @@
 <br><br>
 
 
-## :spider_web: 와이어프레임
-
-[필요하면 사진 넣기]
-
-<br>
-
-[:ringed_planet: 목차로 돌아가기](#목차)
-
-<br><br>
 
 <a id="uml"></a>
 ## :notebook: UML
