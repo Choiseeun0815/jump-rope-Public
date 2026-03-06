@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 플레이어 애니메이션 전용 컨트롤러
-/// - Idle / Hit 는 고정 상태명 사용
-/// - locomotion은 clip 이름을 보고 Run / Walk / Fly Inplace 중 자동 선택
-/// - 같은 상태 중복 재생 방지
-/// - RuntimeAnimatorController가 바뀔 때만 locomotion 캐시 재구성
-/// </summary>
+// 플레이어 애니메이션 전용 컨트롤러
+// - Idle / Hit 는 고정 상태명 사용
+// - locomotion은 clip 이름을 보고 Run / Walk / Fly Inplace 중 자동 선택
+// - 같은 상태 중복 재생 방지
 public sealed class PlayerAnimationController : MonoBehaviour
 {
     [SerializeField] private Animator animator;
@@ -42,20 +39,16 @@ public sealed class PlayerAnimationController : MonoBehaviour
         BuildLocomotionCacheIfNeeded(force: true);
     }
 
-    /// <summary>
-    /// Animator가 비어 있으면 자식에서 자동 탐색
-    /// </summary>
+    // Animator가 비어 있으면 자식에서 자동 탐색
     private void EnsureAnimator()
     {
         if (!animator)
             animator = GetComponentInChildren<Animator>();
     }
 
-    /// <summary>
-    /// locomotion 후보를 1회 캐시
-    /// 컨트롤러가 바뀌지 않았다면 다시 찾지 않음
-    /// 우선순위: Run > Walk > Fly Inplace
-    /// </summary>
+    // locomotion 후보를 1회 캐시
+    // 컨트롤러가 바뀌지 않았다면 다시 찾지 않음
+    // 우선순위: Run > Walk > Fly Inplace
     private void BuildLocomotionCacheIfNeeded(bool force)
     {
         if (!animator || animator.runtimeAnimatorController == null) return;
@@ -88,9 +81,7 @@ public sealed class PlayerAnimationController : MonoBehaviour
         _lastPlayedHash = 0;
     }
 
-    /// <summary>
-    /// 후보 중 실제 clip 이름이 존재하는 첫 번째 이름 반환
-    /// </summary>
+    // 후보 중 실제 clip 이름이 존재하는 첫 번째 이름 반환
     private string PickFirstExisting(string[] candidates)
     {
         if (_clipNames == null)
@@ -106,11 +97,9 @@ public sealed class PlayerAnimationController : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// hash 기준으로 상태 재생
-    /// - 같은 상태 중복 재생 방지
-    /// - 현재 상태와 같으면 재생 생략
-    /// </summary>
+    // hash 기준으로 상태 재생
+    // - 같은 상태 중복 재생 방지
+    // - 현재 상태와 같으면 재생 생략
     private void PlayHash(int hash)
     {
         if (!animator)
@@ -139,34 +128,26 @@ public sealed class PlayerAnimationController : MonoBehaviour
         _lastPlayedHash = hash;
     }
 
-    /// <summary>
-    /// 마지막 재생 상태 캐시 초기화
-    /// 리셋 직후 같은 애니메이션을 다시 강제로 재생하고 싶을 때 사용
-    /// </summary>
+    // 마지막 재생 상태 캐시 초기화
+    // 리셋 직후 같은 애니메이션을 다시 강제로 재생하고 싶을 때 사용
     public void ResetStateCache()
     {
         _lastPlayedHash = 0;
     }
 
-    /// <summary>
-    /// Idle 재생
-    /// </summary>
+    // Idle 재생
     public void PlayIdle()
     {
         PlayHash(IdleHash);
     }
 
-    /// <summary>
-    /// Hit 재생
-    /// </summary>
+    // Hit 재생
     public void PlayHit()
     {
         PlayHash(HitHash);
     }
 
-    /// <summary>
-    /// Run / Walk / Fly Inplace 중 캐시된 locomotion 재생
-    /// </summary>
+    // Run / Walk / Fly Inplace 중 캐시된 locomotion 재생
     public void PlayRun()
     {
         if (_locoHash == 0)
