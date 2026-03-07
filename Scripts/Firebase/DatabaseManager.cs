@@ -3,7 +3,6 @@ using Firebase.Firestore;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using NUnit.Framework.Constraints;
 
 public class DatabaseManager : MonoBehaviour
 {
@@ -12,6 +11,7 @@ public class DatabaseManager : MonoBehaviour
 
     public UserGameData currentData; 
     public string playerUid { get; private set; }
+    
     private void Awake()
     {
         if (Instance == null)
@@ -21,6 +21,7 @@ public class DatabaseManager : MonoBehaviour
         }
         else Destroy(gameObject);
     }
+
     void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
@@ -36,6 +37,8 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsFaulted)
             {
+                Debug.LogError("데이터 로드 실패: " + task.Exception);
+                onResult(false);
                 return;
             }
 
@@ -53,26 +56,25 @@ public class DatabaseManager : MonoBehaviour
         });
     }
 
-
-
     public void CreateNewData(string userId, string name, int score)
     {
         currentData = new UserGameData(name, score);
         SaveUserData(userId, score);
         SaveToCloud();
     }
+
     public void UpdateGameResult(int newScore, int earnedGold, int maxCombo)
     {
         if (currentData == null) return;
 
         currentData.gold += earnedGold;
 
-        if ( newScore > currentData.highScore)
+        if (newScore > currentData.highScore)
         {
             currentData.highScore = newScore;
         }
 
-        if(maxCombo >  currentData.maxCombo)
+        if (maxCombo > currentData.maxCombo)
         {
             currentData.maxCombo = maxCombo;
         }
@@ -94,10 +96,9 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedIconID", iconID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("���� ����, ����� ������: " + iconID);
-            else Debug.LogError("������ ���� ����" + task.Exception);
-        }
-        );
+            if (task.IsCompleted) Debug.Log("아이콘 업데이트 성공, 변경된 아이콘 ID: " + iconID);
+            else Debug.LogError("아이콘 업데이트 실패: " + task.Exception);
+        });
     }
 
     public void UpdateEquippedTheme(string themeID)
@@ -108,8 +109,8 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedThemeID", themeID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("�׸� ���� �Ϸ�: " + themeID);
-            else Debug.Log("�׸� ���� ����" + task.Exception);
+            if (task.IsCompleted) Debug.Log("테마 설정 완료: " + themeID);
+            else Debug.LogError("테마 설정 실패: " + task.Exception);
         });
     }
 
@@ -121,8 +122,8 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedCharID", charID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("ĳ���� ���� ���� �Ϸ�: " + charID);
-            else Debug.LogError("ĳ���� ���� ���� ����: " + task.Exception);
+            if (task.IsCompleted) Debug.Log("캐릭터 장착 정보 업데이트 완료: " + charID);
+            else Debug.LogError("캐릭터 장착 정보 업데이트 실패: " + task.Exception);
         });
     }
 
@@ -132,7 +133,7 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("unlockedIconIDs", currentData.unlockedIconIDs).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("���� ���� �Ϸ�: ������ �ر� ���");
+            if (task.IsCompleted) Debug.Log("업데이트 완료: 잠금 해제 아이콘 목록");
         });
     }
 
@@ -143,8 +144,8 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("unlockedThemeIDs", currentData.unlockedThemeIDs).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("�׸� �ر� ��� ���� �Ϸ�");
-            else Debug.LogError("�׸� �ر� ��� ���� ����: " + task.Exception);
+            if (task.IsCompleted) Debug.Log("테마 잠금 해제 목록 업데이트 완료");
+            else Debug.LogError("테마 잠금 해제 목록 업데이트 실패: " + task.Exception);
         });
     }
 
@@ -155,8 +156,8 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("unlockedCharIDs", currentData.unlockedCharIDs).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("ĳ���� �ر� ��� ���� �Ϸ�");
-            else Debug.LogError("ĳ���� �ر� ��� ���� ����: " + task.Exception);
+            if (task.IsCompleted) Debug.Log("캐릭터 잠금 해제 목록 업데이트 완료");
+            else Debug.LogError("캐릭터 잠금 해제 목록 업데이트 실패: " + task.Exception);
         });
     }
 
@@ -189,7 +190,6 @@ public class DatabaseManager : MonoBehaviour
                 currentData.unlockedCharIDs.Add(itemId);
         }
 
-        // 2) Firestore�� gold + �ش� unlock ����Ʈ�� ���� Update
         DocumentReference docRef = db.Collection("users").Document(playerUid);
 
         var updates = new Dictionary<string, object>
@@ -204,12 +204,12 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log($"���� �ݿ� �Ϸ�: {itemId} / cost={cost}");
+                Debug.Log($"구매 반영 완료: {itemId} / cost={cost}");
                 onDone?.Invoke(true);
             }
             else
             {
-                Debug.LogError("���� �ݿ� ����: " + task.Exception);
+                Debug.LogError("구매 반영 실패: " + task.Exception);
                 onDone?.Invoke(false);
             }
         });
@@ -224,14 +224,15 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log("���� ���� ����");
+                Debug.Log("클라우드 저장 성공");
             }
             else
             {
-                Debug.LogError("���� ���� ���� - " + task.Exception);
+                Debug.LogError("클라우드 저장 실패 - " + task.Exception);
             }
         });
     }
+
     public void SaveUserData(string userId, int newScore)
     {
         if (currentData == null) currentData = new UserGameData();
@@ -243,11 +244,12 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log("������ ���� �Ϸ�");
+                Debug.Log("사용자 데이터 저장 완료");
             }
         });
     }
-    public void DeleteUserData(string userId, Action<bool> onComplete) //���� ������ ����
+
+    public void DeleteUserData(string userId, Action<bool> onComplete) // 유저 데이터 삭제
     {
         DocumentReference docRef = db.Collection("users").Document(userId);
 
@@ -255,12 +257,12 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.LogError("DB ���� ����: " + task.Exception);
+                Debug.LogError("데이터 삭제 실패: " + task.Exception);
                 onComplete(false);
             }
             else
             {
-                Debug.Log("DB ������ ���� �Ϸ�!");
+                Debug.Log("데이터 삭제 완료!");
                 currentData = null;
                 onComplete(true);
             }
@@ -274,7 +276,7 @@ public class DatabaseManager : MonoBehaviour
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.Log("�ߺ� �˻� ����: " + task.Exception);
+                Debug.Log("중복 확인 중 오류 발생: " + task.Exception);
                 onResult(true);
             }
             else
@@ -311,7 +313,7 @@ public class DatabaseManager : MonoBehaviour
         {
             if (!task.IsCompleted)
             {
-                Debug.LogError("Failed to save challenge: " + task.Exception);
+                Debug.LogError("도전 과제 저장 실패: " + task.Exception);
             }
         });
     }
