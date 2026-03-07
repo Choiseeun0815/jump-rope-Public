@@ -48,7 +48,7 @@
 
 | 이름 | 담당 업무 | 깃허브 주소 | 이메일 |
 | :---: | :---: | :---: | :---: |
-| 이경현 | 상점 관련 기능, 캐릭터 관련 기능, 초기 생성 | https://github.com/gstk0009 | gstk0009@naver.com |
+| 이경현 | 상점 관련 기능, 캐릭터 관련 기능, 장애물(동물, 화살), 초기 생성 | https://github.com/gstk0009 | gstk0009@naver.com |
 | 최세은 | 유저 데이터 관리, 도전 과제, 줄 돌리기, 장애물(통나무,잉크) LevelPlay 광고 | https://github.com/Choiseeun0815 | sqq1_s@naver.com |
 
 
@@ -288,6 +288,25 @@
 
 - DOTween Sequence 및 Image Alpha Fade를 사용한 잉크 화면 가림(Ink Splatter) 기능.
 - Show/Sustain/Hide 타임라인 제어 방식으로, 플레이어의 시야를 일시적으로 차단하는 시각적 방해를 수행.
+
+#
+
+#### 🐗2-3. 동물 (Runner)
+- Rigidbody 및 IObstacle 인터페이스를 사용한 돌진형 동물 장애물(Runner) 기능.
+- 플레이어 위치 추적 기반 이동 방향 계산 방식으로, 스폰 시점에 플레이어 방향을 바라보며 직선 돌진하도록 수행.
+- Animator Clip Cache 및 이름 기반 Locomotion 탐색 기능으로, Run / Walk / Fly Inplace 애니메이션 중 사용 가능한 이동 애니메이션을 자동 선택하여 재생함으로써 다양한 모델에 대응하도록 수행.
+- ParticleSystem 초기화 및 재생 제어 기능으로, 풀링된 오브젝트가 재사용될 때 이전 이펙트 상태를 초기화하고 자연스럽게 다시 출력되도록 수행.
+- 플레이어 충돌 시 Stun 적용 기능으로, 타격 효과음 재생과 함께 일정 시간 동안 플레이어의 행동을 제한하는 방해 요소를 수행.
+
+#
+
+#### 🏹2-4. 화살 (Arrow Trap)
+- Rigidbody 및 IObstacle 인터페이스를 사용한 낙하형 화살 장애물(Arrow Trap) 기능.
+- UniTask 및 CancellationToken을 사용한 비동기 제어 방식으로, 장애물 활성화/비활성화 시 경고 연출과 낙하 동작을 안전하게 관리하도록 수행.
+- TrapArea Fill Telegraph 기능으로, 화살 낙하 전 바닥 경고 영역을 일정 시간 동안 표시하여 플레이어가 위험 구간을 인지할 수 있도록 수행.
+- Random Speed 기반 낙하 속도 제어 기능으로, 화살의 낙하 속도에 따라 경고 지속 시간을 동적으로 조정하여 장애물 반응 난이도를 변화시키도록 수행.
+- Kinematic Rigidbody 전환 및 회전 낙하 기능으로, 대기 상태에서는 움직임을 정지시키고 발사 시점에는 아래 방향 속도와 회전을 적용하여 시각적 긴장감을 강화하도록 수행.
+- Trigger 충돌 판정 기반 즉시 게임오버 기능으로, 플레이어가 화살에 닿을 경우 즉시 게임 종료가 발생하도록 수행.
 
 #
 
