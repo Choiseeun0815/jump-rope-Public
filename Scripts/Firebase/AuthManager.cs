@@ -10,7 +10,7 @@ public class AuthManager : MonoBehaviour
 {
     public static AuthManager Instance;
 
-    public string GoogleAPI = "755815740866-2b5g7gl67f2nfl7ae6a2js1rcbgqmjfu.apps.googleusercontent.com";
+    public string GoogleAPI = "-";
 
     private FirebaseAuth auth;
     private GoogleSignInConfiguration configuration;
@@ -76,7 +76,7 @@ public class AuthManager : MonoBehaviour
 
                 if (auth.CurrentUser != null)
                 {
-                    //·Î±×ÀÎ Á¤º¸°¡ ÀÖ´Â °æ¿ì ¡æ µ¥ÀÌÅÍ ·Îµå ½Ãµµ
+                    //ë¡œê·¸ì¸ ì •ë³´ê°€ ìˆëŠ” ê²½ìš° â†’ ë°ì´í„° ë¡œë“œ ì‹œë„
                     string userId = auth.CurrentUser.UserId;
 
                     if (DatabaseManager.Instance != null)
@@ -85,12 +85,12 @@ public class AuthManager : MonoBehaviour
                         {
                             if (hasData)
                             {
-                                // µ¥ÀÌÅÍ°¡ ÀÖÀ¸¸é TouchToStart ÆĞ³Î Ç¥½Ã
+                                // ë°ì´í„°ê°€ ìˆìœ¼ë©´ TouchToStart íŒ¨ë„ í‘œì‹œ
                                 ShowTouchToStartPanel();
                             }
                             else
                             {
-                                //ÀÎÁõÀº µÇ¾îÀÖÀ¸³ª DB µ¥ÀÌÅÍ°¡ ¾ø´Â °æ¿ì (¿¹¿Ü »óÈ²) -> ·Î±×¾Æ¿ô Ã³¸® ÈÄ ·Î±×ÀÎ ¹öÆ° Ç¥½Ã
+                                //ì¸ì¦ì€ ë˜ì–´ìˆìœ¼ë‚˜ DB ë°ì´í„°ê°€ ì—†ëŠ” ê²½ìš° (ì˜ˆì™¸ ìƒí™©) -> ë¡œê·¸ì•„ì›ƒ ì²˜ë¦¬ í›„ ë¡œê·¸ì¸ ë²„íŠ¼ í‘œì‹œ
                                 auth.SignOut();
 
                                 if (GoogleSignIn.DefaultInstance != null && configuration != null)
@@ -99,7 +99,7 @@ public class AuthManager : MonoBehaviour
                                     GoogleSignIn.DefaultInstance.SignOut();
                                 }
 
-                                //·Î±×ÀÎ ¹öÆ°À» º¸¿©ÁÜ
+                                //ë¡œê·¸ì¸ ë²„íŠ¼ì„ ë³´ì—¬ì¤Œ
                                 ShowLoginButton();
                             }
                         });
@@ -107,13 +107,13 @@ public class AuthManager : MonoBehaviour
                 }
                 else
                 {
-                    //·Î±×ÀÎ Á¤º¸°¡ ¾ø´Â °æ¿ì -> ·Î±×ÀÎ ¹öÆ° Ç¥½Ã
+                    //ë¡œê·¸ì¸ ì •ë³´ê°€ ì—†ëŠ” ê²½ìš° -> ë¡œê·¸ì¸ ë²„íŠ¼ í‘œì‹œ
                     ShowLoginButton();
                 }
             }
             else
             {
-                Debug.LogError("Firebase ÀÇÁ¸¼º ¹®Á¦ ¹ß»ı: " + task.Result);
+                Debug.LogError("Firebase ì˜ì¡´ì„± ë¬¸ì œ ë°œìƒ: " + task.Result);
             }
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }
@@ -142,7 +142,7 @@ public class AuthManager : MonoBehaviour
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning("SignOut Áß ¿¡·¯ (¹«½ÃµÊ): " + e.Message);
+                Debug.LogWarning("SignOut ì¤‘ ì—ëŸ¬ (ë¬´ì‹œë¨): " + e.Message);
             }
         }
 
@@ -163,14 +163,14 @@ public class AuthManager : MonoBehaviour
         {
             if (task.Exception != null)
             {
-                Debug.LogError("Google ·Î±×ÀÎ ½ÇÆĞ: " + task.Exception);
+                Debug.LogError("Google ë¡œê·¸ì¸ ì‹¤íŒ¨: " + task.Exception);
             }
             return; 
         }
 
         if (task.Result == null || string.IsNullOrEmpty(task.Result.IdToken))
         {
-            Debug.LogError("IdTokenÀÌ ¾ø½À´Ï´Ù");
+            Debug.LogError("IdTokenì´ ì—†ìŠµë‹ˆë‹¤");
             return;
         }
 
@@ -209,7 +209,7 @@ public class AuthManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("nickNameController ¾øÀ½");
+                        Debug.Log("nickNameController ì—†ìŒ");
                     }
                 }
             });
@@ -236,7 +236,7 @@ public class AuthManager : MonoBehaviour
         {
             if (googleTask.IsFaulted || googleTask.IsCanceled)
             {
-                Debug.LogError("ÀçÀÎÁõ ½ÇÆĞ: " + googleTask.Exception);
+                Debug.LogError("ì¬ì¸ì¦ ì‹¤íŒ¨: " + googleTask.Exception);
                 reAuthFailed = true;
                 reAuthDone = true;
                 return;
@@ -249,12 +249,12 @@ public class AuthManager : MonoBehaviour
             {
                 if (reAuthTask.IsFaulted || reAuthTask.IsCanceled)
                 {
-                    Debug.LogError("Firebase ÀçÀÎÁõ ½ÇÆĞ: " + reAuthTask.Exception);
+                    Debug.LogError("Firebase ì¬ì¸ì¦ ì‹¤íŒ¨: " + reAuthTask.Exception);
                     reAuthFailed = true;
                 }
                 else
                 {
-                    Debug.Log("ÀçÀÎÁõ ¼º°ø");
+                    Debug.Log("ì¬ì¸ì¦ ì„±ê³µ");
                 }
                 reAuthDone = true;
 
@@ -266,7 +266,7 @@ public class AuthManager : MonoBehaviour
 
         if (reAuthFailed)
         {
-            Debug.LogError("ÀçÀÎÁõ ½ÇÆĞ·Î Å»Åğ Áß´Ü");
+            Debug.LogError("ì¬ì¸ì¦ ì‹¤íŒ¨ë¡œ íƒˆí‡´ ì¤‘ë‹¨");
             if (SceneController.Instance != null)
                 yield return StartCoroutine(SceneController.Instance.FadeIn());
             yield break;
@@ -294,12 +294,12 @@ public class AuthManager : MonoBehaviour
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                Debug.LogError("°èÁ¤ »èÁ¦ ½ÇÆĞ: " + task.Exception);
+                Debug.LogError("ê³„ì • ì‚­ì œ ì‹¤íŒ¨: " + task.Exception);
                 authFailed = true;
             }
             else
             {
-                Debug.Log("Auth »èÁ¦ ¼º°ø");
+                Debug.Log("Auth ì‚­ì œ ì„±ê³µ");
             }
             authDone = true;
 
@@ -353,7 +353,7 @@ public class AuthManager : MonoBehaviour
             if (SceneController.Instance != null)
                 SceneController.Instance.SceneTransitionToLobby();
             else
-                Debug.Log("SceneController ¾øÀ½");
+                Debug.Log("SceneController ì—†ìŒ");
         }
     }
 
