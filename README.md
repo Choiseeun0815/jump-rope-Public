@@ -34,6 +34,13 @@
 - **장르**: 캐주얼 점프 액션 / 아케이드
 - **개발 기간**: 2026.01.08 ~ 2026.03.05 (Google PlayStore 비공개 테스트 진행 中)
 
+#
+
+## 🎮 게임 플레이
+### Android-OneStore : [https://onesto.re/0001004724]
+
+#
+
 ## 📺시연 영상
 ### [📺YouTube Link]
 [![Watch the video](https://img.youtube.com/vi/NbgmZB3tmz8/maxresdefault.jpg)](https://www.youtube.com/watch?v=NbgmZB3tmz8)
