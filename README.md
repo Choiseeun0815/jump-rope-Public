@@ -32,8 +32,7 @@
 - **개발 환경**: Unity 6000.3.2f1 <br/> Visual Studio Community 2022, Visual Studio Code
 - **플랫폼**: Mobile (Android)
 - **장르**: 캐주얼 점프 액션 / 아케이드
-- **개발 기간**: 2026.01.08 ~ 2026.03.05 (Google PlayStore 비공개 테스트 진행 中)
-
+- **개발 기간**: 2026.01.08 ~ 2026.03.05
 #
 
 ## 🎮 게임 플레이
