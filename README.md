@@ -38,7 +38,7 @@
 
 ## 🎮 게임 플레이
 ### Android-OneStore : [https://onesto.re/0001004724]
-### PlayStore : [https://play.google.com/store/apps/details?id=com.Project.JumpRopeGame&hl=ko](https://play.google.com/store/apps/details?id=com.Project.JumpRopeGame&pcampaignid=web_share)]
+### PlayStore : [[https://play.google.com/store/apps/details?id=com.Project.JumpRopeGame&hl=ko](https://play.google.com/store/apps/details?id=com.Project.JumpRopeGame&pcampaignid=web_share)]
 
 #
 
