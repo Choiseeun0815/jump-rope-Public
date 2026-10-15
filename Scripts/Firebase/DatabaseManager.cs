@@ -3,11 +3,51 @@ using Firebase.Firestore;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class DatabaseManager : MonoBehaviour
 {
     static public DatabaseManager Instance;
     private FirebaseFirestore db;
+    private readonly SemaphoreSlim economyGate = new SemaphoreSlim(1, 1);
+    public bool IsPurchaseInProgress { get; private set; }
+    public event Action PurchaseStateChanged;
+
+    private void NotifyPurchaseStateChanged()
+    {
+        // A closed/reopened shop can subscribe to the persistent database manager.
+        // Presentation errors must not strand the transaction or its completion callback.
+        if (PurchaseStateChanged == null) return;
+        foreach (Action listener in PurchaseStateChanged.GetInvocationList())
+        {
+            try { listener(); }
+            catch (Exception exception) { Debug.LogException(exception); }
+        }
+    }
+
+    private static bool WriteSucceeded(Task task, string operation)
+    {
+        if (task.IsCanceled)
+        {
+            Debug.LogWarning($"[Database] {operation} cancelled.");
+            return false;
+        }
+        if (task.IsFaulted || task.IsCanceled)
+        {
+            Debug.LogError($"[Database] {operation} failed: {task.Exception}");
+            return false;
+        }
+        return true;
+    }
+
+    private void ObserveWrite(Task task, string operation)
+    {
+        task.ContinueWithOnMainThread(done => { WriteSucceeded(done, operation); });
+    }
+
+
+
 
     public UserGameData currentData; 
     public string playerUid { get; private set; }
@@ -35,7 +75,7 @@ public class DatabaseManager : MonoBehaviour
 
         docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
-            if (task.IsFaulted)
+            if (task.IsFaulted || task.IsCanceled)
             {
                 Debug.LogError("데이터 로드 실패: " + task.Exception);
                 onResult(false);
@@ -58,16 +98,17 @@ public class DatabaseManager : MonoBehaviour
 
     public void CreateNewData(string userId, string name, int score)
     {
+        playerUid = userId;
         currentData = new UserGameData(name, score);
-        SaveUserData(userId, score);
-        SaveToCloud();
+        DocumentReference docRef = db.Collection("users").Document(userId);
+        ObserveWrite(docRef.SetAsync(currentData), "CreateNewData");
     }
 
     public void UpdateGameResult(int newScore, int earnedGold, int maxCombo)
     {
         if (currentData == null) return;
 
-        currentData.gold += earnedGold;
+        if (earnedGold > 0) AddGoldAsync(earnedGold);
 
         if (newScore > currentData.highScore)
         {
@@ -84,8 +125,8 @@ public class DatabaseManager : MonoBehaviour
 
     public void GetBonusGold(int amount)
     {
-        currentData.gold += amount;
-        SaveToCloud();
+        if (amount <= 0) return;
+        AddGoldAsync(amount);
     }
 
     public void UpdateEquippedIcon(string iconID)
@@ -96,8 +137,7 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedIconID", iconID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("아이콘 업데이트 성공, 변경된 아이콘 ID: " + iconID);
-            else Debug.LogError("아이콘 업데이트 실패: " + task.Exception);
+            WriteSucceeded(task, "UpdateEquippedIcon");
         });
     }
 
@@ -109,8 +149,7 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedThemeID", themeID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("테마 설정 완료: " + themeID);
-            else Debug.LogError("테마 설정 실패: " + task.Exception);
+            WriteSucceeded(task, "UpdateEquippedTheme");
         });
     }
 
@@ -122,131 +161,194 @@ public class DatabaseManager : MonoBehaviour
         DocumentReference docRef = db.Collection("users").Document(playerUid);
         docRef.UpdateAsync("equippedCharID", charID).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted) Debug.Log("캐릭터 장착 정보 업데이트 완료: " + charID);
-            else Debug.LogError("캐릭터 장착 정보 업데이트 실패: " + task.Exception);
+            WriteSucceeded(task, "UpdateEquippedChar");
         });
     }
 
     public void UpdateUnlockedIcons()
     {
-        if (currentData == null) return;
+        if (currentData == null || string.IsNullOrEmpty(playerUid)) return;
+        List<string> values = currentData.unlockedIconIDs;
+        if (values == null || values.Count == 0) return;
         DocumentReference docRef = db.Collection("users").Document(playerUid);
-        docRef.UpdateAsync("unlockedIconIDs", currentData.unlockedIconIDs).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted) Debug.Log("업데이트 완료: 잠금 해제 아이콘 목록");
-        });
+        ObserveWrite(docRef.UpdateAsync("unlockedIconIDs",
+            FieldValue.ArrayUnion(values.ConvertAll<object>(value => value).ToArray())), "UpdateUnlockedIcons");
     }
 
     public void UpdateUnlockedThemes()
     {
-        if (currentData == null) return;
-
+        if (currentData == null || string.IsNullOrEmpty(playerUid)) return;
+        List<string> values = currentData.unlockedThemeIDs;
+        if (values == null || values.Count == 0) return;
         DocumentReference docRef = db.Collection("users").Document(playerUid);
-        docRef.UpdateAsync("unlockedThemeIDs", currentData.unlockedThemeIDs).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted) Debug.Log("테마 잠금 해제 목록 업데이트 완료");
-            else Debug.LogError("테마 잠금 해제 목록 업데이트 실패: " + task.Exception);
-        });
+        ObserveWrite(docRef.UpdateAsync("unlockedThemeIDs",
+            FieldValue.ArrayUnion(values.ConvertAll<object>(value => value).ToArray())), "UpdateUnlockedThemes");
     }
 
     public void UpdateUnlockedChars()
     {
-        if (currentData == null) return;
-
+        if (currentData == null || string.IsNullOrEmpty(playerUid)) return;
+        List<string> values = currentData.unlockedCharIDs;
+        if (values == null || values.Count == 0) return;
         DocumentReference docRef = db.Collection("users").Document(playerUid);
-        docRef.UpdateAsync("unlockedCharIDs", currentData.unlockedCharIDs).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted) Debug.Log("캐릭터 잠금 해제 목록 업데이트 완료");
-            else Debug.LogError("캐릭터 잠금 해제 목록 업데이트 실패: " + task.Exception);
-        });
+        ObserveWrite(docRef.UpdateAsync("unlockedCharIDs",
+            FieldValue.ArrayUnion(values.ConvertAll<object>(value => value).ToArray())), "UpdateUnlockedChars");
     }
 
-    public void SpendGoldAndUnlock(ShopCategory category, string itemId, int cost, Action<bool> onDone = null)
+    public async void SpendGoldAndUnlock(ShopCategory category, string itemId, int cost, Action<bool> onDone = null)
     {
-        if (currentData == null)
+        UserGameData data = currentData;
+        string uid = playerUid;
+        if (IsPurchaseInProgress || db == null || data == null || string.IsNullOrEmpty(uid) ||
+            string.IsNullOrWhiteSpace(itemId) || cost < 0 || data.gold < cost ||
+            (category != ShopCategory.Character && category != ShopCategory.Map))
+        {
+            onDone?.Invoke(false);
+            return;
+        }
+        List<string> owned = category == ShopCategory.Map ? data.unlockedThemeIDs : data.unlockedCharIDs;
+        if (owned != null && owned.Contains(itemId))
         {
             onDone?.Invoke(false);
             return;
         }
 
-        if (cost > 0 && currentData.gold < cost)
+        IsPurchaseInProgress = true;
+        NotifyPurchaseStateChanged();
+        bool success = false;
+        await economyGate.WaitAsync();
+        try
         {
-            onDone?.Invoke(false);
-            return;
+            if (currentData == data && playerUid == uid)
+            {
+                DocumentReference docRef = db.Collection("users").Document(uid);
+                // Firestore may retry this callback. Only transaction-local copies may change here.
+                UserGameData committed = await db.RunTransactionAsync(async transaction =>
+                {
+                    DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(docRef);
+                    if (!snapshot.Exists) return null;
+                    UserGameData serverData = snapshot.ConvertTo<UserGameData>();
+                    List<string> items = category == ShopCategory.Map
+                        ? serverData.unlockedThemeIDs : serverData.unlockedCharIDs;
+                    if (items == null) items = new List<string>();
+                    if (serverData.gold < cost || items.Contains(itemId)) return null;
+
+                    serverData.gold -= cost;
+                    items.Add(itemId);
+                    var updates = new Dictionary<string, object> { { "gold", serverData.gold } };
+                    if (category == ShopCategory.Map)
+                    {
+                        serverData.unlockedThemeIDs = items;
+                        updates["unlockedThemeIDs"] = items;
+                    }
+                    else
+                    {
+                        serverData.unlockedCharIDs = items;
+                        if (serverData.unlockedIconIDs == null) serverData.unlockedIconIDs = new List<string>();
+                        if (!serverData.unlockedIconIDs.Contains(itemId)) serverData.unlockedIconIDs.Add(itemId);
+                        updates["unlockedCharIDs"] = items;
+                        updates["unlockedIconIDs"] = serverData.unlockedIconIDs;
+                    }
+                    transaction.Update(docRef, updates);
+                    return serverData;
+                });
+
+                if (this != null && committed != null && currentData == data && playerUid == uid)
+                {
+                    data.gold = committed.gold;
+                    // Preserve local challenge/default unlocks whose ArrayUnion may still be pending.
+                    data.unlockedCharIDs = MergeUnlocks(committed.unlockedCharIDs, data.unlockedCharIDs);
+                    data.unlockedThemeIDs = MergeUnlocks(committed.unlockedThemeIDs, data.unlockedThemeIDs);
+                    data.unlockedIconIDs = MergeUnlocks(committed.unlockedIconIDs, data.unlockedIconIDs);
+                    success = true;
+                }
+                else Debug.LogWarning("[Database] Purchase rejected or user session changed.");
+            }
         }
-
-        if (cost > 0) currentData.gold -= cost;
-
-        if (category == ShopCategory.Map)
+        catch (OperationCanceledException) { Debug.LogWarning("[Database] Purchase cancelled."); }
+        catch (Exception exception) { Debug.LogError($"[Database] Purchase failed: {exception}"); }
+        finally
         {
-            if (currentData.unlockedThemeIDs == null) currentData.unlockedThemeIDs = new List<string>();
-            if (!currentData.unlockedThemeIDs.Contains(itemId))
-                currentData.unlockedThemeIDs.Add(itemId);
+            economyGate.Release();
+            IsPurchaseInProgress = false;
         }
-        else
+        NotifyPurchaseStateChanged();
+        onDone?.Invoke(success);
+    }
+
+    private async void AddGoldAsync(int amount)
+    {
+        UserGameData data = currentData;
+        string uid = playerUid;
+        if (data == null || string.IsNullOrEmpty(uid) || db == null || amount <= 0) return;
+        await economyGate.WaitAsync();
+        try
         {
-            if (currentData.unlockedCharIDs == null) currentData.unlockedCharIDs = new List<string>();
-            if (!currentData.unlockedCharIDs.Contains(itemId))
-                currentData.unlockedCharIDs.Add(itemId);
+            if (currentData != data || playerUid != uid) return;
+            DocumentReference docRef = db.Collection("users").Document(uid);
+            int balance = await db.RunTransactionAsync(async transaction =>
+            {
+                DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(docRef);
+                if (!snapshot.Exists) throw new InvalidOperationException("User document is missing.");
+                int gold = snapshot.GetValue<int>("gold");
+                int updated = checked(gold + amount);
+                transaction.Update(docRef, new Dictionary<string, object> { { "gold", updated } });
+                return updated;
+            });
+            if (this != null && currentData == data && playerUid == uid) data.gold = balance;
         }
+        catch (OperationCanceledException) { Debug.LogWarning("[Database] Gold reward cancelled."); }
+        catch (Exception exception) { Debug.LogError($"[Database] Gold reward failed: {exception}"); }
+        finally { economyGate.Release(); }
+    }
 
-        DocumentReference docRef = db.Collection("users").Document(playerUid);
+    private static List<string> MergeUnlocks(List<string> refreshed, List<string> local)
+    {
+        if (refreshed == null) refreshed = new List<string>();
+        if (local != null)
+            foreach (string id in local)
+                if (!refreshed.Contains(id)) refreshed.Add(id);
+        return refreshed;
+    }
 
+    private Dictionary<string, object> BuildProfileUpdates()
+    {
+        // Broad profile saves must not replace authoritative economy fields or
+        // remove unlocks committed by another device.
         var updates = new Dictionary<string, object>
         {
-            { "gold", currentData.gold },
+            { "nickName", currentData.nickName }, { "highScore", currentData.highScore },
+            { "maxCombo", currentData.maxCombo }, { "equippedIconID", currentData.equippedIconID },
+            { "equippedThemeID", currentData.equippedThemeID }, { "equippedCharID", currentData.equippedCharID },
+            { "buttonCase1", currentData.buttonCase1 }, { "frame_60", currentData.frame_60 },
+            { "challengeProgress", currentData.challengeProgress }, { "totalPlayCount", currentData.totalPlayCount },
+            { "totalAdCount", currentData.totalAdCount }, { "lastLoginDate", currentData.lastLoginDate },
+            { "currentLoginStreak", currentData.currentLoginStreak }
         };
+        AddUnlockUnion(updates, "unlockedCharIDs", currentData.unlockedCharIDs);
+        AddUnlockUnion(updates, "unlockedThemeIDs", currentData.unlockedThemeIDs);
+        AddUnlockUnion(updates, "unlockedIconIDs", currentData.unlockedIconIDs);
+        return updates;
+    }
 
-        if (category == ShopCategory.Map) updates["unlockedThemeIDs"] = currentData.unlockedThemeIDs;
-        else updates["unlockedCharIDs"] = currentData.unlockedCharIDs;
-
-        docRef.UpdateAsync(updates).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                Debug.Log($"구매 반영 완료: {itemId} / cost={cost}");
-                onDone?.Invoke(true);
-            }
-            else
-            {
-                Debug.LogError("구매 반영 실패: " + task.Exception);
-                onDone?.Invoke(false);
-            }
-        });
+    private static void AddUnlockUnion(Dictionary<string, object> updates, string field, List<string> values)
+    {
+        if (values != null && values.Count > 0)
+            updates[field] = FieldValue.ArrayUnion(values.ConvertAll<object>(value => value).ToArray());
     }
 
     public void SaveToCloud()
     {
         if (currentData == null || string.IsNullOrEmpty(playerUid)) return;
-
         DocumentReference docRef = db.Collection("users").Document(playerUid);
-        docRef.SetAsync(currentData).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                Debug.Log("클라우드 저장 성공");
-            }
-            else
-            {
-                Debug.LogError("클라우드 저장 실패 - " + task.Exception);
-            }
-        });
+        ObserveWrite(docRef.UpdateAsync(BuildProfileUpdates()), "SaveToCloud");
     }
 
     public void SaveUserData(string userId, int newScore)
     {
-        if (currentData == null) currentData = new UserGameData();
-
+        if (currentData == null || string.IsNullOrEmpty(userId) || userId != playerUid) return;
         if (newScore > currentData.highScore) currentData.highScore = newScore;
-
-        DocumentReference docRef = db.Collection("users").Document(userId);
-        docRef.SetAsync(currentData).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                Debug.Log("사용자 데이터 저장 완료");
-            }
-        });
+        SaveToCloud();
     }
 
     public void DeleteUserData(string userId, Action<bool> onComplete) // 유저 데이터 삭제
@@ -303,7 +405,6 @@ public class DatabaseManager : MonoBehaviour
         currentData.challengeProgress[challengeKey] = newValue;
 
         DocumentReference docRef = db.Collection("users").Document(playerUid);
-
         Dictionary<string, object> updates = new Dictionary<string, object>
         {
             { "challengeProgress." + challengeKey, newValue }
@@ -311,10 +412,7 @@ public class DatabaseManager : MonoBehaviour
 
         docRef.UpdateAsync(updates).ContinueWithOnMainThread(task =>
         {
-            if (!task.IsCompleted)
-            {
-                Debug.LogError("도전 과제 저장 실패: " + task.Exception);
-            }
+            WriteSucceeded(task, "SaveChallengeProgress");
         });
     }
 }

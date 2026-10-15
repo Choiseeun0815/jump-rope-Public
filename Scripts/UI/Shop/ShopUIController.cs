@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -47,6 +48,8 @@ public class ShopUIController : MonoBehaviour
     // 한 번 생성한 뒤 재사용해서 중복 Instantiate를 줄임
     private Dictionary<string, GameObject> spawned = new Dictionary<string, GameObject>();
     private GameObject currentCharacter;                          // 현재 로비에 표시 중인 캐릭터
+    private bool isProcessing;
+    private int viewVersion;
     private GameObject currentMap;                                // 현재 로비에 표시 중인 맵
 
     [SerializeField] private ConfettiBurstEffect confettiBurstEffect; // 해금 성공 연출 효과
@@ -65,6 +68,7 @@ public class ShopUIController : MonoBehaviour
         if (manager != null)
         {
             manager.OnChanged += Refresh;
+            manager.OnPurchaseStateChanged += UpdateRandomButtonUI;
             manager.OnGoldChanged += HandleGoldChanged;
             manager.OnSelected += HandleSelected;
         }
@@ -79,6 +83,7 @@ public class ShopUIController : MonoBehaviour
         if (manager != null)
         {
             manager.OnChanged -= Refresh;
+            manager.OnPurchaseStateChanged -= UpdateRandomButtonUI;
             manager.OnGoldChanged -= HandleGoldChanged;
             manager.OnSelected -= HandleSelected;
         }
@@ -207,6 +212,7 @@ public class ShopUIController : MonoBehaviour
     // 탭 전환 처리
     private void SwitchTab(ShopCategory tab)
     {
+        viewVersion++;
         currentTab = tab;
 
         UpdateRandomButtonUI();
@@ -252,8 +258,7 @@ public class ShopUIController : MonoBehaviour
         if (!isCharTab) return;
 
         randomUnlockButtonText.text = $"랜덤 해금 ({manager.RandomUnlockCost}G)";
-        // 필요 시 골드 부족에 따라 interactable 처리 가능
-        // randomUnlockButton.interactable = manager.GetGold() >= manager.RandomUnlockCost;
+        randomUnlockButton.interactable = !isProcessing && !manager.IsPurchaseInProgress;
     }
 
     // 현재 탭 기준으로 아이템 셀 그리드 다시 생성
@@ -348,20 +353,53 @@ public class ShopUIController : MonoBehaviour
     }
 
     // 랜덤 해금 버튼 클릭 처리
+    private void OnEnable()
+    {
+        UpdateRandomButtonUI();
+    }
+
+    private void OnDisable()
+    {
+        viewVersion++;
+    }
+
+    private async UniTask ShowRandomPurchaseResultAsync(ShopItemDefinition unlocked, ShopCategory category, int version)
+    {
+        try
+        {
+            if (unlocked == null || !isActiveAndEnabled || version != viewVersion) return;
+            if (confettiBurstEffect != null)
+            {
+                confettiBurstEffect.PlayBurst();
+                bool cancelled = await UniTask.Delay(TimeSpan.FromSeconds(0.5f),
+                    cancellationToken: this.GetCancellationTokenOnDestroy()).SuppressCancellationThrow();
+                if (cancelled || this == null || !isActiveAndEnabled || version != viewVersion) return;
+            }
+            if (EffectSounds.Instance != null) EffectSounds.Instance.GetCharacterSound();
+            if (popup != null && currentTab == category) popup.Open(manager, unlocked, owned: true);
+            RefreshSelectedPreview();
+        }
+        finally
+        {
+            if (this != null)
+            {
+                isProcessing = false;
+                UpdateRandomButtonUI();
+            }
+        }
+    }
+
     private void OnRandomUnlock()
     {
-        if (manager == null) return;
-
-        var unlocked = manager.TryRandomUnlock(currentTab);
-        if (unlocked == null) return;
-
-        // 해금 성공 연출 및 사운드 재생
-        if (confettiBurstEffect != null) confettiBurstEffect.PlayBurst();
-        if (EffectSounds.Instance != null) EffectSounds.Instance.GetCharacterSound();
-
-        // 해금 결과 팝업 열기
-        if (popup != null) popup.Open(manager, unlocked, owned: true);
-
-        RefreshSelectedPreview();
+        if (manager == null || isProcessing || manager.IsPurchaseInProgress) return;
+        isProcessing = true;
+        UpdateRandomButtonUI();
+        int version = viewVersion;
+        ShopCategory purchasedCategory = currentTab;
+        manager.TryRandomUnlock(purchasedCategory, unlocked =>
+        {
+            if (this == null) return;
+            ShowRandomPurchaseResultAsync(unlocked, purchasedCategory, version).Forget();
+        });
     }
 }
