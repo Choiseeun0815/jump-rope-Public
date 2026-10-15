@@ -34,6 +34,9 @@ public class ShopPopupUI : MonoBehaviour
     [SerializeField] private ConfettiBurstEffect confettiBurstEffect; // 해금 성공 연출
     private ShopManager manager;                              // 현재 상점 매니저 참조
     private ShopItemDefinition current;                       // 현재 팝업에 표시 중인 아이템
+    private bool isProcessing;
+    private int viewVersion;
+    private bool IsViewOpen => isActiveAndEnabled && (root == null || root.activeInHierarchy);
     private bool isOwned;                                     // 현재 아이템 보유 여부
 
     private void Awake()
@@ -54,7 +57,10 @@ public class ShopPopupUI : MonoBehaviour
     // - 보유 여부에 따라 버튼/메시지 갱신
     public void Open(ShopManager manager, ShopItemDefinition item, bool owned)
     {
+        if (this.manager != null) this.manager.OnPurchaseStateChanged -= UpdatePurchaseButton;
         this.manager = manager;
+        if (manager != null) manager.OnPurchaseStateChanged += UpdatePurchaseButton;
+        viewVersion++;
         this.current = item;
         this.isOwned = owned;
 
@@ -104,7 +110,10 @@ public class ShopPopupUI : MonoBehaviour
                 messageText.text = "잠긴 아이템입니다. 고정 해금으로 바로 해금할 수 있어요.";
 
             if (fixedUnlockButton != null)
+            {
                 fixedUnlockButton.gameObject.SetActive(true);
+                fixedUnlockButton.interactable = !isProcessing && manager != null && !manager.IsPurchaseInProgress;
+            }
 
             if (fixedUnlockButtonText != null)
                 fixedUnlockButtonText.text = $"고정 해금 ({price}G)";
@@ -117,6 +126,8 @@ public class ShopPopupUI : MonoBehaviour
     // 팝업 닫기 및 내부 상태 초기화
     public void Close()
     {
+        viewVersion++;
+        if (manager != null) manager.OnPurchaseStateChanged -= UpdatePurchaseButton;
         // 미리보기 스테이지 정리
         if (previewStage != null)
         {
@@ -135,27 +146,46 @@ public class ShopPopupUI : MonoBehaviour
     }
 
     // 고정 해금 버튼 클릭 시 처리
+    private void UpdatePurchaseButton()
+    {
+        if (fixedUnlockButton != null)
+            fixedUnlockButton.interactable = !isProcessing && manager != null && !manager.IsPurchaseInProgress;
+    }
+
+    private void OnDisable()
+    {
+        // Invalidates pending presentation while allowing a committed purchase to persist.
+        viewVersion++;
+    }
+
+    private void OnDestroy()
+    {
+        if (manager != null) manager.OnPurchaseStateChanged -= UpdatePurchaseButton;
+    }
+
     private void OnFixedUnlockClicked()
     {
-        if (manager == null || current == null)
-            return;
-
-        bool ok = manager.TryFixedUnlock(current);
-        if (!ok)
+        if (manager == null || current == null || isOwned || isProcessing || manager.IsPurchaseInProgress) return;
+        ShopManager purchaseManager = manager;
+        ShopItemDefinition purchasedItem = current;
+        int version = viewVersion;
+        isProcessing = true;
+        UpdatePurchaseButton();
+        purchaseManager.TryFixedUnlock(purchasedItem, ok =>
         {
-            // 골드 부족 등으로 실패한 경우 여기서 종료
-            return;
-        }
-
-        // 해금 성공 연출 및 사운드 재생
-        if (confettiBurstEffect != null)
-            confettiBurstEffect.PlayBurst();
-
-        if (EffectSounds.Instance != null)
-            EffectSounds.Instance.GetCharacterSound();
-
-        // 해금 직후 상태를 보유 상태로 다시 열어 UI 갱신
-        Open(manager, current, owned: true);
+            if (this == null) return;
+            isProcessing = false;
+            UpdatePurchaseButton();
+            if (!ok || !IsViewOpen || version != viewVersion || current != purchasedItem)
+            {
+                if (IsViewOpen && manager != null && current != null)
+                    Open(manager, current, manager.IsOwned(current.id, current.category));
+                return;
+            }
+            if (confettiBurstEffect != null) confettiBurstEffect.PlayBurst();
+            if (EffectSounds.Instance != null) EffectSounds.Instance.GetCharacterSound();
+            Open(purchaseManager, purchasedItem, owned: true);
+        });
     }
 
     // 선택(장착) 버튼 클릭 시 처리

@@ -38,10 +38,36 @@ public class ShopManager : MonoBehaviour
     public event Action<ShopItemDefinition> OnSelected;
 
     public int RandomUnlockCost => randomUnlockCost;
+    public bool IsPurchaseInProgress => DatabaseManager.Instance != null && DatabaseManager.Instance.IsPurchaseInProgress;
+    public event Action OnPurchaseStateChanged;
 
     // 빠른 조회를 위한 ID -> 아이템 Dictionary
     private Dictionary<string, ShopItemDefinition> charDict;
     private Dictionary<string, ShopItemDefinition> mapDict;
+    private DatabaseManager observedDatabase;
+
+    private void OnEnable() { BindDatabase(); }
+
+    private void BindDatabase()
+    {
+        if (observedDatabase == DatabaseManager.Instance) return;
+        if (observedDatabase != null) observedDatabase.PurchaseStateChanged -= HandlePurchaseStateChanged;
+        observedDatabase = DatabaseManager.Instance;
+        if (observedDatabase != null) observedDatabase.PurchaseStateChanged += HandlePurchaseStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (observedDatabase != null) observedDatabase.PurchaseStateChanged -= HandlePurchaseStateChanged;
+        observedDatabase = null;
+    }
+
+    private void HandlePurchaseStateChanged()
+    {
+        if (this == null) return;
+        OnPurchaseStateChanged?.Invoke();
+        if (!IsPurchaseInProgress) NotifyChanged();
+    }
 
     private void Awake()
     {
@@ -61,6 +87,7 @@ public class ShopManager : MonoBehaviour
 
     private void Start()
     {
+        BindDatabase();
         // 시작 시 현재 골드/상태를 UI에 알림
         NotifyChanged();
     }
@@ -146,97 +173,76 @@ public class ShopManager : MonoBehaviour
     }
 
     // 특정 비용을 지불할 수 있는지 확인
-    public bool CanAfford(int cost) => GetGold() >= cost;
+    public bool CanAfford(int cost) => cost >= 0 && GetGold() >= cost;
 
     // 고정 가격으로 아이템 해금 시도
-    public bool TryFixedUnlock(ShopItemDefinition item)
+    public void TryFixedUnlock(ShopItemDefinition item, Action<bool> onDone)
     {
-        var d = Data;
-        if (d == null || item == null) return false;
-
-        // 이미 보유 중이면 성공 처리
-        if (IsOwned(item.id, item.category)) return true;
-
-        // 골드 부족 시 실패 + 안내 패널 표시
+        if (Data == null || item == null || IsPurchaseInProgress || item.fixedUnlockPrice < 0 ||
+            GetById(item.id, item.category) != item || IsOwned(item.id, item.category))
+        {
+            onDone?.Invoke(false);
+            return;
+        }
         if (!CanAfford(item.fixedUnlockPrice))
         {
-            lessGoldPanel.SetActive(true);
-            return false;
+            if (lessGoldPanel != null) lessGoldPanel.SetActive(true);
+            onDone?.Invoke(false);
+            return;
         }
-
-        // DB에 골드 차감 + 해금 반영
-        DatabaseManager.Instance.SpendGoldAndUnlock(
-            item.category,
-            item.id,
-            item.fixedUnlockPrice,
-            onDone: ok =>
-            {
-                if (!ok)
-                {
-                    return;
-                }
-
-                // 성공 시 골드/해금/UI 갱신 이벤트 발생
-                OnGoldChanged?.Invoke(d.gold);
-                OnUnlocked?.Invoke(item);
-                OnChanged?.Invoke();
-            });
-
-        // 캐릭터 해금 시 연결된 아이콘도 함께 해금
-        if (item.category == ShopCategory.Character)
-            UserIconManager.Instance.UnlockIcon(item.id);
-
-        return true;
+        Purchase(item, item.fixedUnlockPrice, onDone);
     }
 
     // 랜덤 해금 시도
     // 아직 보유하지 않은 아이템 중 하나를 랜덤으로 선택해 해금
-    public ShopItemDefinition TryRandomUnlock(ShopCategory category)
+    public void TryRandomUnlock(ShopCategory category, Action<ShopItemDefinition> onDone)
     {
-        var d = Data;
-        if (d == null) return null;
-
-        // 골드 부족 시 실패 + 안내 패널 표시
+        if (Data == null || IsPurchaseInProgress || randomUnlockCost < 0 ||
+            (category != ShopCategory.Character && category != ShopCategory.Map))
+        {
+            onDone?.Invoke(null);
+            return;
+        }
         if (!CanAfford(randomUnlockCost))
         {
-            lessGoldPanel.SetActive(true);
-            return null;
+            if (lessGoldPanel != null) lessGoldPanel.SetActive(true);
+            onDone?.Invoke(null);
+            return;
         }
-
-        // 아직 보유하지 않은 아이템만 후보군으로 구성
         var pool = GetItems(category)
-            .Where(i => i != null && !IsOwned(i.id, i.category))
+            .Where(i => i != null && i.category == category && !string.IsNullOrEmpty(i.id) && !IsOwned(i.id, category))
             .ToList();
-
-        // 더 이상 해금할 아이템이 없으면 종료
-        if (pool.Count == 0) return null;
-
-        // 후보군 중 랜덤 선택
+        if (pool.Count == 0)
+        {
+            onDone?.Invoke(null);
+            return;
+        }
         var picked = pool[UnityEngine.Random.Range(0, pool.Count)];
+        Purchase(picked, randomUnlockCost, ok => onDone?.Invoke(ok ? picked : null));
+    }
 
-        // DB에 골드 차감 + 해금 반영
-        DatabaseManager.Instance.SpendGoldAndUnlock(
-            category,
-            picked.id,
-            randomUnlockCost,
-            onDone: ok =>
+    private void Purchase(ShopItemDefinition item, int cost, Action<bool> onDone)
+    {
+        DatabaseManager.Instance.SpendGoldAndUnlock(item.category, item.id, cost, ok =>
+        {
+            // DatabaseManager owns the durable operation even if this scene has closed.
+            try
             {
-                if (!ok)
+                if (this != null)
                 {
-                    return;
+                    OnPurchaseStateChanged?.Invoke();
+                    if (ok)
+                    {
+                        // The character's linked icon was committed in the same transaction.
+                        OnGoldChanged?.Invoke(GetGold());
+                        OnUnlocked?.Invoke(item);
+                        OnChanged?.Invoke();
+                    }
                 }
-
-                // 성공 시 골드/해금/UI 갱신 이벤트 발생
-                OnGoldChanged?.Invoke(d.gold);
-                OnUnlocked?.Invoke(picked);
-                OnChanged?.Invoke();
-            });
-
-        // 캐릭터 해금 시 연결된 아이콘도 함께 해금
-        if (picked.category == ShopCategory.Character)
-            UserIconManager.Instance.UnlockIcon(picked.id);
-
-        return picked;
+            }
+            finally { onDone?.Invoke(ok); }
+        });
+        OnPurchaseStateChanged?.Invoke();
     }
 
     // 보유 중인 아이템을 선택(장착)
